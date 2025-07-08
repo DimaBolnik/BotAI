@@ -8,6 +8,7 @@ import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 import ru.bolnik.botai.TelegramBot;
+import ru.bolnik.botai.openai.ChatGptService;
 
 @Configuration
 public class TelegramConfig {
@@ -15,16 +16,19 @@ public class TelegramConfig {
 
     @Bean
     @SneakyThrows
-    public TelegramBot telegramBot(@Value("${bot.token}") String token, TelegramBotsApi api) {
-        DefaultBotOptions defaultBotOptions = new DefaultBotOptions();
-        TelegramBot bot = new TelegramBot(defaultBotOptions, token);
-        api.registerBot(bot);
-        return bot;
+    public TelegramBotsApi telegramBotsApi() {
+        return new TelegramBotsApi(DefaultBotSession.class);
     }
 
     @Bean
     @SneakyThrows
-    public TelegramBotsApi telegramBotsApi() {
-        return new TelegramBotsApi(DefaultBotSession.class);
+    public TelegramBot telegramBot(@Value("${bot.token}") String token,
+                                   TelegramBotsApi api,
+                                   ChatGptService gptService) {
+
+        DefaultBotOptions defaultBotOptions = new DefaultBotOptions();
+        TelegramBot bot = new TelegramBot(defaultBotOptions, token, gptService);
+        api.registerBot(bot);
+        return bot;
     }
 }
