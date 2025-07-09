@@ -2,6 +2,8 @@ package ru.bolnik.botai.openai;
 
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ru.bolnik.botai.ChatGptHistory;
 import ru.bolnik.botai.ChatHistory;
@@ -11,11 +13,13 @@ import ru.bolnik.botai.api.Message;
 import ru.bolnik.botai.api.OpenAiClient;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ChatGptService {
 
     private final OpenAiClient openAiClient;
     private final ChatGptHistory chatGptHistory;
+    @Value("${bot.model}")
+    private String model;
 
     @NonNull
     public String getResponseChatUser(Long userId, String userText) {
@@ -27,7 +31,7 @@ public class ChatGptService {
 
 
         ChatCompletionRequest request = ChatCompletionRequest.builder()
-                .model("yi-coder-9b-chat")
+                .model(model)
                 .messages(history.getChatMessages())
                 .build();
         ChatCompletionResponse response = openAiClient.createChatCompletion(request);
